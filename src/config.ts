@@ -8,8 +8,7 @@ export const appInfo = {
   appName: 'NestJS Starter',
   apiDomain: 'http://localhost:3000',
   websiteDomain: 'http://localhost:4200',
-  apiBasePath: '/auth',
-  websiteBasePath: '/auth',
+  apiBasePath: '/api/auth',
 }
 
 export const connectionURI = 'http://supertokens:3567'
