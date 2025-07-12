@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from './app.module'
-import { appInfo } from './config'
+import { appInfo } from './supertokens/config'
 import supertokens from 'supertokens-node'
 import { SuperTokensExceptionFilter } from 'supertokens-nestjs'
 import { ValidationPipe, VersioningType } from '@nestjs/common'
@@ -8,7 +8,26 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import helmet from 'helmet'
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule.register({ driver: 'prisma' }))
+
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          imgSrc: [
+            `'self'`,
+            'data:',
+            'https://cdn.jsdelivr.net/gh/supertokens/',
+          ],
+          scriptSrc: [
+            `'self'`,
+            `'unsafe-inline'`,
+            `https://cdn.jsdelivr.net/gh/supertokens/`,
+          ],
+        },
+      },
+    }),
+  )
 
   app.enableCors({
     origin: [appInfo.websiteDomain],
@@ -16,8 +35,6 @@ async function bootstrap() {
     credentials: true,
   })
   app.useGlobalFilters(new SuperTokensExceptionFilter())
-
-  app.use(helmet())
 
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
